@@ -95,7 +95,7 @@ namespace Chess
 			    || userInput.Y > cellSize.Height * 8)
 				return null;
 			int i = 0;
-			while (!(i > userInput.X / cellSize.Width - 1 && i < userInput.X / cellSize.Width))
+			while (!(i > userInput.X / cellSize.Width - 1 && i <= userInput.X / cellSize.Width))
 			{
 				if (i > 7)
 					throw new IndexOutOfRangeException();
@@ -103,7 +103,7 @@ namespace Chess
 			}
 
 			int j = 0;
-			while (!(j > userInput.Y / cellSize.Height - 1 && j < userInput.Y / cellSize.Height))
+			while (!(j > userInput.Y / cellSize.Height - 1 && j <= userInput.Y / cellSize.Height))
 			{
 				if (j > 7)
 					throw new IndexOutOfRangeException();
