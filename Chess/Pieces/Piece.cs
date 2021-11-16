@@ -5,9 +5,11 @@ namespace Chess.Pieces
 {
 	public abstract class Piece
 	{
-		protected PieceColour Colour { get; private set; }
-		public Point Position { get; protected set; }
+		public PieceColour Colour { get; private set; }
+		public Point Position { get; set; }
 		public Image Image { get; protected set; }
+		
+		public bool IsDragging { get; set; }
 
 		public enum PieceColour
 		{
@@ -19,6 +21,7 @@ namespace Chess.Pieces
 		{
 			Colour = pieceColour;
 			Position = position;
+			IsDragging = false;
 		}
 
 		protected Image AssignImage(string whitePieceFileName, string blackPieceFileName)
