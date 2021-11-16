@@ -96,22 +96,11 @@ namespace Chess
 			    || userInput.X > cellSize.Width * 8
 			    || userInput.Y > cellSize.Height * 8)
 				return null;
-			int i = 0;
-			while (!(i > userInput.X / cellSize.Width - 1 && i <= userInput.X / cellSize.Width))
-			{
-				if (i > 7)
-					throw new IndexOutOfRangeException();
-				i++;
-			}
+			var i = (int) (userInput.X / cellSize.Width);
+			var j = (int) (userInput.Y / cellSize.Height);
 
-			int j = 0;
-			while (!(j > userInput.Y / cellSize.Height - 1 && j <= userInput.Y / cellSize.Height))
-			{
-				if (j > 7)
-					throw new IndexOutOfRangeException();
-				j++;
-			}
-
+			if (i > 8 || j > 8)
+				throw new ArgumentException();
 			return new Point(j, i);
 		}
 
