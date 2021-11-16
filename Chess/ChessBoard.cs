@@ -98,6 +98,11 @@ namespace Chess
 		{
 			if (piece == null)
 				return;
+			if (piece.Position == newPos)
+			{
+				piece.IsDragging = false;
+				return;
+			}
 			_board[piece.Position.X, piece.Position.Y] = null;
 			piece.Position = newPos;
 			_board[newPos.X, newPos.Y] = piece;
