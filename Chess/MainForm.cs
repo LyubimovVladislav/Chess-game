@@ -19,6 +19,7 @@ namespace Chess
 	{
 		private const int Offset = 20;
 		private readonly ChessBoard _chessBoard;
+		private Point _initialMousePosition;
 
 		private struct DraggingPiece
 		{
@@ -34,6 +35,7 @@ namespace Chess
 			InitializeComponent();
 			_chessBoard = new ChessBoard(ChessBoard.ChessBoardFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"));
 			_draggingPiece = new DraggingPiece();
+			_initialMousePosition = new Point();
 			pictureBox1.Refresh();
 		}
 
@@ -126,15 +128,14 @@ namespace Chess
 
 		private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
 		{
+			_initialMousePosition = e.Location;
 			var cell = CalculateBoardCell(e.Location);
-			if (!cell.HasValue || !_chessBoard.IsPlayerTurn((Point)cell))
+			if (!cell.HasValue || !_chessBoard.IsPlayerTurn((Point) cell))
 				return;
 			_draggingPiece.Piece = _chessBoard.IsDragging((Point) cell, true);
 			_draggingPiece.UserInput = e.Location;
 
-
-			// TODO: replace with invalidate
-			pictureBox1.Refresh();
+			InvalidatePictureBox(e.Location);
 		}
 
 		private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
@@ -143,19 +144,35 @@ namespace Chess
 				return;
 			_draggingPiece.UserInput = e.Location;
 
-			// TODO: replace with invalidate
-			pictureBox1.Refresh();
+			InvalidatePictureBox(e.Location);
 		}
 
 		private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
 		{
-			var cell = CalculateBoardCell(e.Location);
-			if (!cell.HasValue || _draggingPiece.Piece is {IsDragging:false})
+			if (_draggingPiece.Piece is {IsDragging: false})
 				return;
+			var cell = CalculateBoardCell(e.Location);
+			if (!cell.HasValue)
+			{
+				_draggingPiece.Piece.IsDragging = false;
+				InvalidatePictureBox(e.Location);
+				InvalidatePictureBox(_initialMousePosition);
+				return;
+			}
+
 			_chessBoard.Capture((Point) cell, _draggingPiece.Piece);
 
-			// TODO: replace with invalidate
-			pictureBox1.Refresh();
+			InvalidatePictureBox(e.Location);
+		}
+
+		private void InvalidatePictureBox(Point location)
+		{
+			var info = GetCellWidthAndHeight();
+			pictureBox1.Invalidate(new Rectangle(
+				(int) (location.X - info.Width),
+				(int) (location.Y - info.Height),
+				(int) (info.Width * 2),
+				(int) (info.Height * 2)));
 		}
 	}
 }
