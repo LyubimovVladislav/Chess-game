@@ -77,14 +77,13 @@ namespace Chess
 					cellSize.Width,
 					cellSize.Height);
 			}
-
-			var pen = new Pen(Color.DarkRed) {DashStyle = DashStyle.Solid, Width = cellSize.Width/30f};
+			
 			foreach (var move in _possibleMoves)
 			{
 				var posX = (int) (cellSize.WidthOffset + cellSize.Width * move.X);
 				var posY = (int) (cellSize.HeightOffset + cellSize.Height * move.Y);
-				picture.DrawEllipse(pen,
-					new Rectangle(posX, posY, (int) cellSize.Width, (int) cellSize.Height));
+				picture.FillRectangle(new SolidBrush(Color.FromArgb(100,255,0,0)),
+					new RectangleF(posX, posY, cellSize.Width, cellSize.Height));
 			}
 		}
 
