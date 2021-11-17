@@ -28,6 +28,15 @@ namespace Chess
 
 		public static Piece[,] ChessBoardFromFen(string fen)
 		{
+			var dictionary = new Dictionary<char, Func<Piece.PieceColour, Point, Piece>>()
+			{
+				['b'] = (a, b) => new Bishop(a, b),
+				['k'] = (a, b) => new King(a, b),
+				['n'] = (a, b) => new Knight(a, b),
+				['p'] = (a, b) => new Pawn(a, b),
+				['q'] = (a, b) => new Queen(a, b),
+				['r'] = (a, b) => new Rook(a, b)
+			};
 			Piece[,] chessBoard = new Piece[8, 8];
 			int i, j;
 			i = j = 0;
@@ -35,45 +44,22 @@ namespace Chess
 			{
 				switch (letter)
 				{
-					case 'b' or 'B':
-						chessBoard[j, i] = new Bishop(
-							Char.IsLower(letter) ? Piece.PieceColour.Black : Piece.PieceColour.White,
-							new Point(j, i));
-						break;
-					case 'k' or 'K':
-						chessBoard[j, i] =
-							new King(Char.IsLower(letter) ? Piece.PieceColour.Black : Piece.PieceColour.White,
-								new Point(j, i));
-						break;
-					case 'n' or 'N':
-						chessBoard[j, i] =
-							new Knight(Char.IsLower(letter) ? Piece.PieceColour.Black : Piece.PieceColour.White,
-								new Point(j, i));
-						break;
-					case 'p' or 'P':
-						chessBoard[j, i] =
-							new Pawn(Char.IsLower(letter) ? Piece.PieceColour.Black : Piece.PieceColour.White,
-								new Point(j, i));
-						break;
-					case 'q' or 'Q':
-						chessBoard[j, i] =
-							new Queen(Char.IsLower(letter) ? Piece.PieceColour.Black : Piece.PieceColour.White,
-								new Point(j, i));
-						break;
-					case 'r' or 'R':
-						chessBoard[j, i] =
-							new Rook(Char.IsLower(letter) ? Piece.PieceColour.Black : Piece.PieceColour.White,
-								new Point(j, i));
-						break;
 					case '/':
 						i++;
 						j = -1;
 						break;
-					case var n and <= '9' and >= '1':
+					case var n and >= '1' and <= '9':
 						j += n - '1';
 						break;
+					default:
+					{
+						if (char.IsLetter(letter))
+							chessBoard[j, i] = dictionary[char.ToLower(letter)].Invoke(
+								Char.IsLower(letter) ? Piece.PieceColour.Black : Piece.PieceColour.White,
+								new Point(j, i));
+						break;
+					}
 				}
-
 				j++;
 			}
 
