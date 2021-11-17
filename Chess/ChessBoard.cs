@@ -35,18 +35,36 @@ namespace Chess
 			{
 				switch (letter)
 				{
-					case 'b': chessBoard[j, i] = new Bishop(Piece.PieceColour.Black, new Point(j, i)); break;
-					case 'B': chessBoard[j, i] = new Bishop(Piece.PieceColour.White, new Point(j, i)); break;
-					case 'k': chessBoard[j, i] = new King(Piece.PieceColour.Black,   new Point(j, i)); break;
-					case 'K': chessBoard[j, i] = new King(Piece.PieceColour.White,   new Point(j, i)); break;
-					case 'n': chessBoard[j, i] = new Knight(Piece.PieceColour.Black, new Point(j, i)); break;
-					case 'N': chessBoard[j, i] = new Knight(Piece.PieceColour.White, new Point(j, i)); break;
-					case 'p': chessBoard[j, i] = new Pawn(Piece.PieceColour.Black,   new Point(j, i)); break;
-					case 'P': chessBoard[j, i] = new Pawn(Piece.PieceColour.White,   new Point(j, i)); break;
-					case 'q': chessBoard[j, i] = new Queen(Piece.PieceColour.Black,  new Point(j, i)); break;
-					case 'Q': chessBoard[j, i] = new Queen(Piece.PieceColour.White,  new Point(j, i)); break;
-					case 'r': chessBoard[j, i] = new Rook(Piece.PieceColour.Black,   new Point(j, i)); break;
-					case 'R': chessBoard[j, i] = new Rook(Piece.PieceColour.White,   new Point(j, i)); break;
+					case 'b' or 'B':
+						chessBoard[j, i] = new Bishop(
+							Char.IsLower(letter) ? Piece.PieceColour.Black : Piece.PieceColour.White,
+							new Point(j, i));
+						break;
+					case 'k' or 'K':
+						chessBoard[j, i] =
+							new King(Char.IsLower(letter) ? Piece.PieceColour.Black : Piece.PieceColour.White,
+								new Point(j, i));
+						break;
+					case 'n' or 'N':
+						chessBoard[j, i] =
+							new Knight(Char.IsLower(letter) ? Piece.PieceColour.Black : Piece.PieceColour.White,
+								new Point(j, i));
+						break;
+					case 'p' or 'P':
+						chessBoard[j, i] =
+							new Pawn(Char.IsLower(letter) ? Piece.PieceColour.Black : Piece.PieceColour.White,
+								new Point(j, i));
+						break;
+					case 'q' or 'Q':
+						chessBoard[j, i] =
+							new Queen(Char.IsLower(letter) ? Piece.PieceColour.Black : Piece.PieceColour.White,
+								new Point(j, i));
+						break;
+					case 'r' or 'R':
+						chessBoard[j, i] =
+							new Rook(Char.IsLower(letter) ? Piece.PieceColour.Black : Piece.PieceColour.White,
+								new Point(j, i));
+						break;
 					case '/':
 						i++;
 						j = -1;
@@ -86,6 +104,7 @@ namespace Chess
 				piece.IsDragging = false;
 				return false;
 			}
+
 			_board[piece.Position.X, piece.Position.Y] = null;
 			_board[newPos.X, newPos.Y] = piece;
 			piece.Move(newPos);
