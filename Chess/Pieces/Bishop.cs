@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 
 namespace Chess.Pieces
 {
@@ -6,12 +8,58 @@ namespace Chess.Pieces
 	{
 		public Bishop(PieceColour pieceColour, Point position) : base(pieceColour, position)
 		{
-			Image = AssignImage("Chess_white_bishop.png","Chess_black_bishop.png");
+			Image = AssignImage("Chess_white_bishop.png", "Chess_black_bishop.png");
 		}
 
-		public override void Move()
+		public override List<Point> PossibleMoves(Piece[,] board)
 		{
-			throw new System.NotImplementedException();
+			var possibleMoves = new List<Point>();
+			int i = 0;
+			int j = 0;
+			while (Position.X + ++i <= 7 && Position.Y + ++j <= 7)
+			{
+				if (!CheckPossible(ref board, ref possibleMoves, i, j))
+					break;
+			}
+
+			i = j = 0;
+			while (Position.X + --i >= 0 && Position.Y + --j >= 0)
+			{
+				if (!CheckPossible(ref board, ref possibleMoves, i, j))
+					break;
+			}
+
+			i = j = 0;
+
+			while (Position.X + ++i <= 7 && Position.Y + --j >= 0)
+			{
+				if (!CheckPossible(ref board, ref possibleMoves, i, j))
+					break;
+			}
+
+			i = j = 0;
+
+			while (Position.X + --i >= 0 && Position.Y + ++j <= 7)
+			{
+				if (!CheckPossible(ref board, ref possibleMoves, i, j))
+					break;
+			}
+
+			return possibleMoves;
+		}
+
+		private bool CheckPossible(ref Piece[,] board, ref List<Point> possibleMoves, int i, int j)
+		{
+			if (board[Position.X + i, Position.Y + j] == null)
+				possibleMoves.Add(new Point(Position.X + i, Position.Y + j));
+			else
+			{
+				if (board[Position.X + i, Position.Y + j].Colour != Colour)
+					possibleMoves.Add(new Point(Position.X + i, Position.Y + j));
+				return false;
+			}
+
+			return true;
 		}
 	}
 }

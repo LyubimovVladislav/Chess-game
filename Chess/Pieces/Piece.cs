@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 
 namespace Chess.Pieces
@@ -33,6 +34,12 @@ namespace Chess.Pieces
 			return Image.FromFile(imagePath);
 		}
 
-		public abstract void Move();
+		public abstract List<Point> PossibleMoves(Piece[,] board);
+
+		public virtual void Move(Point newPos)
+		{
+			Position = newPos;
+			IsDragging = false;
+		}
 	}
 }

@@ -48,6 +48,7 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="ChessBoard.cs" />
+        <Compile Include="Events\PawnPromotedEventArgs.cs" />
         <Compile Include="Extensions\ClampExtension.cs" />
         <Compile Include="MainForm.cs">
             <SubType>Form</SubType>

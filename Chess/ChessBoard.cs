@@ -35,42 +35,18 @@ namespace Chess
 			{
 				switch (letter)
 				{
-					case 'b':
-						chessBoard[i, j] = new Bishop(Piece.PieceColour.Black, new Point(i, j));
-						break;
-					case 'B':
-						chessBoard[i, j] = new Bishop(Piece.PieceColour.White, new Point(i, j));
-						break;
-					case 'k':
-						chessBoard[i, j] = new King(Piece.PieceColour.Black, new Point(i, j));
-						break;
-					case 'K':
-						chessBoard[i, j] = new King(Piece.PieceColour.White, new Point(i, j));
-						break;
-					case 'n':
-						chessBoard[i, j] = new Knight(Piece.PieceColour.Black, new Point(i, j));
-						break;
-					case 'N':
-						chessBoard[i, j] = new Knight(Piece.PieceColour.White, new Point(i, j));
-						break;
-					case 'p':
-						chessBoard[i, j] = new Pawn(Piece.PieceColour.Black, new Point(i, j));
-						break;
-					case 'P':
-						chessBoard[i, j] = new Pawn(Piece.PieceColour.White, new Point(i, j));
-						break;
-					case 'q':
-						chessBoard[i, j] = new Queen(Piece.PieceColour.Black, new Point(i, j));
-						break;
-					case 'Q':
-						chessBoard[i, j] = new Queen(Piece.PieceColour.White, new Point(i, j));
-						break;
-					case 'r':
-						chessBoard[i, j] = new Rook(Piece.PieceColour.Black, new Point(i, j));
-						break;
-					case 'R':
-						chessBoard[i, j] = new Rook(Piece.PieceColour.White, new Point(i, j));
-						break;
+					case 'b': chessBoard[j, i] = new Bishop(Piece.PieceColour.Black, new Point(j, i)); break;
+					case 'B': chessBoard[j, i] = new Bishop(Piece.PieceColour.White, new Point(j, i)); break;
+					case 'k': chessBoard[j, i] = new King(Piece.PieceColour.Black,   new Point(j, i)); break;
+					case 'K': chessBoard[j, i] = new King(Piece.PieceColour.White,   new Point(j, i)); break;
+					case 'n': chessBoard[j, i] = new Knight(Piece.PieceColour.Black, new Point(j, i)); break;
+					case 'N': chessBoard[j, i] = new Knight(Piece.PieceColour.White, new Point(j, i)); break;
+					case 'p': chessBoard[j, i] = new Pawn(Piece.PieceColour.Black,   new Point(j, i)); break;
+					case 'P': chessBoard[j, i] = new Pawn(Piece.PieceColour.White,   new Point(j, i)); break;
+					case 'q': chessBoard[j, i] = new Queen(Piece.PieceColour.Black,  new Point(j, i)); break;
+					case 'Q': chessBoard[j, i] = new Queen(Piece.PieceColour.White,  new Point(j, i)); break;
+					case 'r': chessBoard[j, i] = new Rook(Piece.PieceColour.Black,   new Point(j, i)); break;
+					case 'R': chessBoard[j, i] = new Rook(Piece.PieceColour.White,   new Point(j, i)); break;
 					case '/':
 						i++;
 						j = -1;
@@ -94,20 +70,27 @@ namespace Chess
 			return _board[point.X, point.Y];
 		}
 
-		public void Capture(Point newPos, Piece piece)
+		public List<Point> GetPossibleMoves(Point point)
+		{
+			if (_board[point.X, point.Y] == null)
+				return new List<Point>();
+			return _board[point.X, point.Y].PossibleMoves(_board);
+		}
+
+		public bool MakeMove(Point newPos, Piece piece)
 		{
 			if (piece == null)
-				return;
-			if (piece.Position == newPos)
+				return false;
+			if (!piece.PossibleMoves(_board).Contains(newPos) || piece.Position == newPos)
 			{
 				piece.IsDragging = false;
-				return;
+				return false;
 			}
 			_board[piece.Position.X, piece.Position.Y] = null;
-			piece.Position = newPos;
 			_board[newPos.X, newPos.Y] = piece;
-			piece.IsDragging = false;
+			piece.Move(newPos);
 			ChangeTurn();
+			return true;
 		}
 
 		private void ChangeTurn()

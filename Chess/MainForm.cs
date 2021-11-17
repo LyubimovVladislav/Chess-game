@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Resources;
 using System.Text;
@@ -20,6 +21,7 @@ namespace Chess
 		private const int Offset = 20;
 		private readonly ChessBoard _chessBoard;
 		private Point _initialMousePosition;
+		private List<Point> _possibleMoves;
 
 		private struct DraggingPiece
 		{
@@ -37,6 +39,7 @@ namespace Chess
 			_draggingPiece = new DraggingPiece();
 			_initialMousePosition = new Point();
 			pictureBox1.Refresh();
+			_possibleMoves = new List<Point>();
 		}
 
 		private void DrawChessBoard(Graphics picture)
@@ -61,8 +64,8 @@ namespace Chess
 			{
 				if (cell == null || cell.IsDragging)
 					continue;
-				var posX = cellSize.WidthOffset + cellSize.Width * cell.Position.Y;
-				var posY = cellSize.HeightOffset + cellSize.Height * cell.Position.X;
+				var posX = cellSize.WidthOffset + cellSize.Width * cell.Position.X;
+				var posY = cellSize.HeightOffset + cellSize.Height * cell.Position.Y;
 				picture.DrawImage(cell.Image, posX, posY, cellSize.Width, cellSize.Height);
 			}
 
@@ -73,6 +76,15 @@ namespace Chess
 					_draggingPiece.UserInput.Y - cellSize.Height / 2f,
 					cellSize.Width,
 					cellSize.Height);
+			}
+
+			var pen = new Pen(Color.DarkRed) {DashStyle = DashStyle.Solid, Width = cellSize.Width/30f};
+			foreach (var move in _possibleMoves)
+			{
+				var posX = (int) (cellSize.WidthOffset + cellSize.Width * move.X);
+				var posY = (int) (cellSize.HeightOffset + cellSize.Height * move.Y);
+				picture.DrawEllipse(pen,
+					new Rectangle(posX, posY, (int) cellSize.Width, (int) cellSize.Height));
 			}
 		}
 
@@ -101,7 +113,7 @@ namespace Chess
 
 			if (i > 8 || j > 8)
 				throw new ArgumentException();
-			return new Point(j, i);
+			return new Point(i, j);
 		}
 
 		private (float Height, float Width, float WidthOffset, float HeightOffset)
@@ -117,14 +129,22 @@ namespace Chess
 
 		private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
 		{
+			if (e.Button == MouseButtons.Right)
+			{
+				CancelMove(e.Location);
+				return;
+			}
+
 			_initialMousePosition = e.Location;
 			var cell = CalculateBoardCell(e.Location);
 			if (!cell.HasValue || !_chessBoard.IsPlayerTurn((Point) cell))
 				return;
 			_draggingPiece.Piece = _chessBoard.IsDragging((Point) cell, true);
 			_draggingPiece.UserInput = e.Location;
+			_possibleMoves = _chessBoard.GetPossibleMoves(_draggingPiece.Piece.Position);
 
-			InvalidatePictureBox(e.Location);
+			// InvalidatePictureBox(e.Location);
+			pictureBox1.Refresh();
 		}
 
 		private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
@@ -141,17 +161,15 @@ namespace Chess
 			if (_draggingPiece.Piece is {IsDragging: false})
 				return;
 			var cell = CalculateBoardCell(e.Location);
-			if (!cell.HasValue)
+			if (!cell.HasValue || !_chessBoard.MakeMove((Point) cell, _draggingPiece.Piece))
 			{
-				_draggingPiece.Piece.IsDragging = false;
-				InvalidatePictureBox(e.Location);
-				InvalidatePictureBox(_initialMousePosition);
+				CancelMove(e.Location);
 				return;
 			}
 
-			_chessBoard.Capture((Point) cell, _draggingPiece.Piece);
-
-			InvalidatePictureBox(e.Location);
+			_possibleMoves = new List<Point>();
+			pictureBox1.Refresh();
+			// InvalidatePictureBox(e.Location);
 		}
 
 		private void InvalidatePictureBox(Point location)
@@ -162,6 +180,17 @@ namespace Chess
 				(int) (location.Y - info.Height),
 				(int) (info.Width * 2),
 				(int) (info.Height * 2)));
+		}
+
+		private void CancelMove(Point mouseLocation)
+		{
+			if (_draggingPiece.Piece is {IsDragging: true})
+			{
+				_draggingPiece.Piece.IsDragging = false;
+			}
+
+			InvalidatePictureBox(mouseLocation);
+			InvalidatePictureBox(_initialMousePosition);
 		}
 	}
 }
