@@ -1,69 +1,73 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using Chess.Pieces;
 
 namespace Chess
 {
 	public class ChessBoard
 	{
+		private List<Piece>[][] _allLists;
+		private List<Piece>[] _bishops;
+		private List<Piece>[] _knights;
+		private List<Piece>[] _pawns;
+		private List<Piece>[] _queens;
+		private List<Piece>[] _rooks;
+		private Piece[] _kings;
 		private Piece[,] _board;
+		private List<Move> _moveHistory;
+
 		private Piece.PieceColour PlayerTurn { get; set; }
 
 		public ChessBoard(Piece[,] board)
 		{
 			_board = board;
 			PlayerTurn = Piece.PieceColour.White;
+			_bishops = new[] {new List<Piece>(2), new List<Piece>(2)};
+			_knights = new[] {new List<Piece>(2), new List<Piece>(2)};
+			_pawns = new[] {new List<Piece>(8), new List<Piece>(8)};
+			_queens = new[] {new List<Piece>(2), new List<Piece>(2)};
+			_rooks = new[] {new List<Piece>(2), new List<Piece>(2)};
+			_allLists = new[] {_bishops, _knights, _pawns, _queens, _rooks};
+			_kings = new Piece[2];
+			_moveHistory = new List<Move>();
+			InitializeLists();
+		}
+
+		//TODO: improve this, maybe throw it in fen class
+		private void InitializeLists()
+		{
+			foreach (var cell in _board)
+			{
+				switch (cell)
+				{
+					case null:
+						continue;
+					case Bishop:
+						_bishops[(int) cell.Colour].Add(cell);
+						break;
+					case Knight:
+						_knights[(int) cell.Colour].Add(cell);
+						break;
+					case Pawn:
+						_pawns[(int) cell.Colour].Add(cell);
+						break;
+					case Queen:
+						_queens[(int) cell.Colour].Add(cell);
+						break;
+					case Rook:
+						_rooks[(int) cell.Colour].Add(cell);
+						break;
+					case King:
+						_kings[(int) cell.Colour] = cell;
+						break;
+				}
+			}
 		}
 
 		public IEnumerable<Piece> GetEnumerable()
 		{
-			foreach (var cell in _board)
-			{
-				yield return cell;
-			}
-		}
-
-		public static Piece[,] ChessBoardFromFen(string fen)
-		{
-			var dictionary = new Dictionary<char, Func<Piece.PieceColour, Point, Piece>>()
-			{
-				['b'] = (a, b) => new Bishop(a, b),
-				['k'] = (a, b) => new King(a, b),
-				['n'] = (a, b) => new Knight(a, b),
-				['p'] = (a, b) => new Pawn(a, b),
-				['q'] = (a, b) => new Queen(a, b),
-				['r'] = (a, b) => new Rook(a, b)
-			};
-			Piece[,] chessBoard = new Piece[8, 8];
-			int i, j;
-			i = j = 0;
-			foreach (var letter in fen)
-			{
-				switch (letter)
-				{
-					case '/':
-						i++;
-						j = -1;
-						break;
-					case var n and >= '1' and <= '9':
-						j += n - '1';
-						break;
-					default:
-					{
-						if (char.IsLetter(letter))
-							chessBoard[j, i] = dictionary[char.ToLower(letter)].Invoke(
-								Char.IsLower(letter) ? Piece.PieceColour.Black : Piece.PieceColour.White,
-								new Point(j, i));
-						break;
-					}
-				}
-				j++;
-			}
-
-			return chessBoard;
+			return _board.Cast<Piece>();
 		}
 
 		public Piece IsDragging(Point point, bool status)
