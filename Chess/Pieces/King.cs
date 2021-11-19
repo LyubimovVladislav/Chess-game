@@ -14,7 +14,7 @@ namespace Chess.Pieces
 			Image = AssignImage("Chess_white_king.png", "Chess_black_king.png");
 		}
 
-		public override List<Point> PossibleMoves(Piece[,] board)
+		public override List<Point> PossibleMoves(Piece[,] board, Move previousMove)
 		{
 			var possibleMoves = new List<Point>();
 			for (var i = -1; i <= 1; i++)
@@ -24,24 +24,17 @@ namespace Chess.Pieces
 					if (i == 0 && j == 0)
 						continue;
 					if (Position.X + i is >= 0 and <= 7 && Position.Y + j is >= 0 and <= 7)
-					{
-						if (board[Position.X + i, Position.Y + j] != null)
-						{
-							if (board[Position.X + i, Position.Y + j].Colour != Colour)
-								possibleMoves.Add(new Point(Position.X + i, Position.Y + j));
-						}
-						else
+						if (IsAllowedToMoveTo(board[Position.X + i, Position.Y + j]))
 							possibleMoves.Add(new Point(Position.X + i, Position.Y + j));
-					}
 				}
 			}
 
 			return possibleMoves;
 		}
 
-		public override void Move(Point newPos)
+		public override void Move(Point newPos, out Move move)
 		{
-			base.Move(newPos);
+			base.Move(newPos, out move);
 			_canCastle = false;
 		}
 	}

@@ -11,7 +11,7 @@ namespace Chess.Pieces
 			Image = AssignImage("Chess_white_knight.png", "Chess_black_knight.png");
 		}
 
-		public override List<Point> PossibleMoves(Piece[,] board)
+		public override List<Point> PossibleMoves(Piece[,] board, Move previousMove)
 		{
 			var possibleMoves = new List<Point>();
 			if (Position.X + 2 <= 7)
@@ -28,52 +28,23 @@ namespace Chess.Pieces
 		private void MarkPossibleY(ref Piece[,] board, ref List<Point> possibleMoves, int i)
 		{
 			if (Position.Y + 1 <= 7)
-			{
-				if (board[Position.X + i, Position.Y + 1] != null)
-				{
-					if (board[Position.X + i, Position.Y + 1].Colour != Colour)
-						possibleMoves.Add(new Point(Position.X + i, Position.Y + 1));
-				}
-				else
+				if (IsAllowedToMoveTo(board[Position.X + i, Position.Y + 1]))
 					possibleMoves.Add(new Point(Position.X + i, Position.Y + 1));
-			}
 
 			if (Position.Y - 1 >= 0)
-			{
-				if (board[Position.X + i, Position.Y - 1] != null)
-				{
-					if (board[Position.X + i, Position.Y - 1].Colour != Colour)
-						possibleMoves.Add(new Point(Position.X + i, Position.Y - 1));
-				}
-				else
+				if (IsAllowedToMoveTo(board[Position.X + i, Position.Y - 1]))
 					possibleMoves.Add(new Point(Position.X + i, Position.Y - 1));
-			}
 		}
 
 		private void MarkPossibleX(ref Piece[,] board, ref List<Point> possibleMoves, int i)
 		{
 			if (Position.X + 1 <= 7)
-			{
-				if (board[Position.X + 1, Position.Y + i] != null)
-				{
-					if (board[Position.X + 1, Position.Y + i].Colour != Colour)
-						possibleMoves.Add(new Point(Position.X + 1, Position.Y + i));
-				}
-				else
+				if (IsAllowedToMoveTo(board[Position.X + 1, Position.Y + i]))
 					possibleMoves.Add(new Point(Position.X + 1, Position.Y + i));
-			}
-
-
+			
 			if (Position.X - 1 >= 0)
-			{
-				if (board[Position.X - 1, Position.Y + i] != null)
-				{
-					if (board[Position.X - 1, Position.Y + i].Colour != Colour)
-						possibleMoves.Add(new Point(Position.X - 1, Position.Y + i));
-				}
-				else
+				if (IsAllowedToMoveTo(board[Position.X - 1, Position.Y + i]))
 					possibleMoves.Add(new Point(Position.X - 1, Position.Y + i));
-			}
 		}
 	}
 }

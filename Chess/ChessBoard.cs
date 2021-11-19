@@ -82,14 +82,19 @@ namespace Chess
 		{
 			if (_board[point.X, point.Y] == null)
 				return new List<Point>();
-			return _board[point.X, point.Y].PossibleMoves(_board);
+
+			return _board[point.X, point.Y].PossibleMoves(_board,
+				_moveHistory.Count - 2 < 0 ? null : _moveHistory[_moveHistory.Count - 1]);
 		}
 
 		public bool MakeMove(Point newPos, Piece piece)
 		{
+			// It's a mess :)
+			
 			if (piece == null)
 				return false;
-			if (!piece.PossibleMoves(_board).Contains(newPos) || piece.Position == newPos)
+			if (!piece.PossibleMoves(_board, _moveHistory.Count - 2 < 0 ? null : _moveHistory[_moveHistory.Count - 1])
+				.Contains(newPos) || piece.Position == newPos)
 			{
 				piece.IsDragging = false;
 				return false;
@@ -97,7 +102,11 @@ namespace Chess
 
 			_board[piece.Position.X, piece.Position.Y] = null;
 			_board[newPos.X, newPos.Y] = piece;
-			piece.Move(newPos);
+			piece.Move(newPos, out Move move);
+			if (move.HasEnPassantCapture)
+				_board[(move.EnPassantCapturedCell).X, ((Point) move.EnPassantCapturedCell).Y] = null;
+
+			_moveHistory.Add(move);
 			ChangeTurn();
 			return true;
 		}

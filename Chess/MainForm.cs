@@ -18,7 +18,13 @@ namespace Chess
 {
 	public partial class MainForm : Form
 	{
-		private const int Offset = 20;
+		private const int MinOffset = 20;
+		private const float FontScale = 0.2f;
+		private const float CharIndexOffsetX = 0.14f;
+		private const float CharIndexOffsetY = 0.22f;
+		private const float IntIndexOffsetX = 0.01f;
+		private const float IntIndexOffsetY = 0.01f;
+		private const string FontName = "Times New Roman";
 		private readonly ChessBoard _chessBoard;
 		private Point _initialMousePosition;
 		private List<Point> _possibleMoves;
@@ -35,7 +41,8 @@ namespace Chess
 		public MainForm()
 		{
 			InitializeComponent();
-			_chessBoard = new ChessBoard(ChessBoard.ChessBoardFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"));
+			_chessBoard =
+				new ChessBoard(FenNotation.ChessBoardFromFenNotation("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"));
 			_draggingPiece = new DraggingPiece();
 			_initialMousePosition = new Point();
 			pictureBox1.Refresh();
@@ -47,6 +54,7 @@ namespace Chess
 			var cellSize = GetCellWidthAndHeight();
 			var whiteBrush = new SolidBrush(Color.FromArgb(240, 217, 181));
 			var blackBrush = new SolidBrush(Color.FromArgb(181, 136, 99));
+			var font = new Font(FontName, cellSize.Width * (FontScale * 0.7f));
 
 			for (int i = 0; i < 8; i++)
 			{
@@ -57,7 +65,32 @@ namespace Chess
 						cellSize.Width,
 						cellSize.Height);
 					picture.FillRectangle((i + j) % 2 == 0 ? whiteBrush : blackBrush, rect);
+					if (j == 7)
+					{
+						var numberRect = new PointF(
+							cellSize.WidthOffset + cellSize.Width * i + cellSize.Width * (1 - CharIndexOffsetX),
+							cellSize.HeightOffset + cellSize.Height * j + cellSize.Width * (1 - CharIndexOffsetY));
+						picture.DrawString(char.ToString((char) ('a' + i)), font,
+							(i + j) % 2 == 0 ? blackBrush : whiteBrush, numberRect);
+					}
+
+					if (i == 0)
+					{
+						var numberRect = new PointF(
+							cellSize.WidthOffset + cellSize.Width * i + cellSize.Width * IntIndexOffsetX,
+							cellSize.HeightOffset + cellSize.Height * j + cellSize.Width * IntIndexOffsetY);
+						picture.DrawString(char.ToString((char) ('1' + 7 - j)), font,
+							(i + j) % 2 == 0 ? blackBrush : whiteBrush, numberRect);
+					}
 				}
+			}
+
+			foreach (var move in _possibleMoves)
+			{
+				var posX = (int) (cellSize.WidthOffset + cellSize.Width * move.X);
+				var posY = (int) (cellSize.HeightOffset + cellSize.Height * move.Y);
+				picture.FillRectangle(new SolidBrush(Color.FromArgb(100, 255, 0, 0)),
+					new RectangleF(posX, posY, cellSize.Width, cellSize.Height));
 			}
 
 			foreach (var cell in _chessBoard.GetEnumerable())
@@ -76,14 +109,6 @@ namespace Chess
 					_draggingPiece.UserInput.Y - cellSize.Height / 2f,
 					cellSize.Width,
 					cellSize.Height);
-			}
-			
-			foreach (var move in _possibleMoves)
-			{
-				var posX = (int) (cellSize.WidthOffset + cellSize.Width * move.X);
-				var posY = (int) (cellSize.HeightOffset + cellSize.Height * move.Y);
-				picture.FillRectangle(new SolidBrush(Color.FromArgb(100,255,0,0)),
-					new RectangleF(posX, posY, cellSize.Width, cellSize.Height));
 			}
 		}
 
@@ -120,9 +145,9 @@ namespace Chess
 		{
 			// ReSharper disable once JoinDeclarationAndInitializer
 			float height, width;
-			height = width = (Math.Min(pictureBox1.Size.Height, pictureBox1.Size.Width) - Offset) / 8f;
-			var heightOffset = (pictureBox1.Size.Height - pictureBox1.Size.Width).Clamp(Offset) / 2f;
-			var widthOffset = (pictureBox1.Size.Width - pictureBox1.Size.Height).Clamp(Offset) / 2f;
+			height = width = (Math.Min(pictureBox1.Size.Height, pictureBox1.Size.Width) - MinOffset) / 8f;
+			var heightOffset = (pictureBox1.Size.Height - pictureBox1.Size.Width).Clamp(MinOffset) / 2f;
+			var widthOffset = (pictureBox1.Size.Width - pictureBox1.Size.Height).Clamp(MinOffset) / 2f;
 			return (height, width, widthOffset, heightOffset);
 		}
 

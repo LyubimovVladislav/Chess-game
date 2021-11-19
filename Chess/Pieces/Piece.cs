@@ -6,10 +6,11 @@ namespace Chess.Pieces
 {
 	public abstract class Piece
 	{
+		// TODO: implement directions to prevent repeating code
 		public PieceColour Colour { get; private set; }
 		public Point Position { get; set; }
 		public Image Image { get; protected set; }
-		
+
 		public bool IsDragging { get; set; }
 
 		public enum PieceColour
@@ -34,12 +35,23 @@ namespace Chess.Pieces
 			return Image.FromFile(imagePath);
 		}
 
-		public abstract List<Point> PossibleMoves(Piece[,] board);
+		public abstract List<Point> PossibleMoves(Piece[,] board, Move previousMove);
 
-		public virtual void Move(Point newPos)
+		public virtual void Move(Point newPos, out Move move)
 		{
+			move = new Move(Position, newPos, this, Colour);
 			Position = newPos;
 			IsDragging = false;
+		}
+
+		protected bool IsFriendly(Piece piece)
+		{
+			return this.Colour == piece.Colour;
+		}
+
+		protected virtual bool IsAllowedToMoveTo(Piece piece)
+		{
+			return piece == null || !IsFriendly(piece);
 		}
 	}
 }

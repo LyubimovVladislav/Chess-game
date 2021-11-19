@@ -50,12 +50,14 @@
         <Compile Include="ChessBoard.cs" />
         <Compile Include="Events\PawnPromotedEventArgs.cs" />
         <Compile Include="Extensions\ClampExtension.cs" />
+        <Compile Include="FenNotation.cs" />
         <Compile Include="MainForm.cs">
             <SubType>Form</SubType>
         </Compile>
         <Compile Include="MainForm.Designer.cs">
             <DependentUpon>MainForm.cs</DependentUpon>
         </Compile>
+        <Compile Include="Move.cs" />
         <Compile Include="Pieces\Bishop.cs" />
         <Compile Include="Pieces\Piece.cs" />
         <Compile Include="Pieces\King.cs" />

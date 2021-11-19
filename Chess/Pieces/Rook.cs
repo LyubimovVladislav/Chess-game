@@ -14,55 +14,40 @@ namespace Chess.Pieces
 		}
 
 
-		public override List<Point> PossibleMoves(Piece[,] board)
+		public override List<Point> PossibleMoves(Piece[,] board, Move previousMove)
 		{
 			var possibleMoves = new List<Point>();
 			int i = 0;
-			while (Position.X + ++i <= 7)
+			while (Position.X + ++i <= 7 && IsAllowedToMoveTo(board[Position.X + i, Position.Y]))
 			{
-				if (!CheckPossible(ref board, ref possibleMoves, i, 0))
-					break;
+				possibleMoves.Add(new Point(Position.X + i, Position.Y));
 			}
+
 			i = 0;
-			while (Position.X + --i >= 0)
+			while (Position.X + --i >= 0 && IsAllowedToMoveTo(board[Position.X + i, Position.Y]))
 			{
-				if (!CheckPossible(ref board, ref possibleMoves, i, 0))
-					break;
+				possibleMoves.Add(new Point(Position.X + i, Position.Y));
 			}
+
 			i = 0;
-			while (Position.Y + ++i <= 7)
+			while (Position.Y + ++i <= 7 && IsAllowedToMoveTo(board[Position.X, Position.Y + i]))
 			{
-				if (!CheckPossible(ref board, ref possibleMoves, 0, i))
-					break;
+				possibleMoves.Add(new Point(Position.X, Position.Y + i));
 			}
+
 			i = 0;
-			while (Position.Y + --i >= 0)
+			while (Position.Y + --i >= 0 && IsAllowedToMoveTo(board[Position.X, Position.Y + i]))
 			{
-				if (!CheckPossible(ref board, ref possibleMoves, 0, i))
-					break;
+				possibleMoves.Add(new Point(Position.X, Position.Y + i));
 			}
 
 			return possibleMoves;
 		}
 
-		public override void Move(Point newPos)
+		public override void Move(Point newPos, out Move move)
 		{
-			base.Move(newPos);
+			base.Move(newPos, out move);
 			_canCastle = false;
-		}
-
-		private bool CheckPossible(ref Piece[,] board, ref List<Point> possibleMoves, int i, int j)
-		{
-			if (board[Position.X + i, Position.Y + j] == null)
-				possibleMoves.Add(new Point(Position.X + i, Position.Y + j));
-			else
-			{
-				if (board[Position.X + i, Position.Y + j].Colour != Colour)
-					possibleMoves.Add(new Point(Position.X + i, Position.Y + j));
-				return false;
-			}
-
-			return true;
 		}
 	}
 }
