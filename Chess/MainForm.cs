@@ -69,15 +69,6 @@ namespace Chess
 				picture.DrawImage(cell.Image, posX, posY, cellSize.Width, cellSize.Height);
 			}
 
-			if (_draggingPiece.Piece is {IsDragging: true})
-			{
-				picture.DrawImage(_draggingPiece.Piece.Image,
-					_draggingPiece.UserInput.X - cellSize.Width / 2f,
-					_draggingPiece.UserInput.Y - cellSize.Height / 2f,
-					cellSize.Width,
-					cellSize.Height);
-			}
-
 			var pen = new Pen(Color.DarkRed) {DashStyle = DashStyle.Solid, Width = cellSize.Width/30f};
 			foreach (var move in _possibleMoves)
 			{
@@ -85,6 +76,15 @@ namespace Chess
 				var posY = (int) (cellSize.HeightOffset + cellSize.Height * move.Y);
 				picture.DrawEllipse(pen,
 					new Rectangle(posX, posY, (int) cellSize.Width, (int) cellSize.Height));
+			}
+
+			if (_draggingPiece.Piece is {IsDragging: true})
+			{
+				picture.DrawImage(_draggingPiece.Piece.Image,
+					_draggingPiece.UserInput.X - cellSize.Width / 2f,
+					_draggingPiece.UserInput.Y - cellSize.Height / 2f,
+					cellSize.Width,
+					cellSize.Height);
 			}
 		}
 
