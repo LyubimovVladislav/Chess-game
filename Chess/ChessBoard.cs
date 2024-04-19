@@ -18,7 +18,8 @@ namespace Chess
 		private List<Move> _moveHistory;
 
 		private Piece.PieceColour PlayerTurn { get; set; }
-
+		// Somewhere there should be a reference about using the factory method or something like that but it lost in time 
+		// due to not commiting the latest version of the code before deleting it :)
 		public ChessBoard(Piece[,] board)
 		{
 			_board = board;
